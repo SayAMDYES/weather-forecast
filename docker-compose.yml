@@ -1,0 +1,18 @@
+services:
+  glow:
+    build:
+      context: .
+    image: weather-forecast:local
+    ports:
+      - "127.0.0.1:8765:8765"
+    environment:
+      GLOW_SERVER_HOST: 0.0.0.0
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config:ro
+    init: true
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

@@ -1,0 +1,113 @@
+# 火烧云预报配置。所有评分权重和阈值都集中在 scoring 下，便于以后校准。
+
+# 计算区域由用户在网页上框选，保存在 paths.regions 指向的文件里。
+# 每个区域的计算域按显示域向四周扩出光路长度自动推算（东西向全长，南北向按太阳方位最大偏角）。
+regions:
+  # 区域是固定大小的框：每个点的精度只取决于它自己的 500 km 光路（下载范围会自动扩出这段），
+  # 和框的大小无关；但云图本身约 9–25 km 一格，框太小几乎看不出变化，下载代价却一样。
+  # 所以取最细网格下计算量仍然轻松的最大框：4° × 5°，0.02° 网格约 5 万点。
+  frame: {lat_span: 4.0, lon_span: 5.0, step: 0.02}
+  # 太阳在高纬度地区可能不升不落，框的南北边界限制在这个纬度以内
+  max_abs_lat: 60
+
+forecast:
+  days: 3
+  # 已计算的日期和云量缓存保留几天（含今天），更早的会在下次计算时清理
+  keep_days: 3
+  events: [sunrise, sunset]
+  models: [gfs, ecmwf]
+
+sources:
+  gfs:
+    nomads_url: https://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p25.pl
+    aws_url: https://noaa-gfs-bdp-pds.s3.amazonaws.com
+    # 往回查找的起报个数（每 6 小时一个）
+    lookback_cycles: 6
+    # NOMADS 有访问频率限制，请求之间至少间隔这么久
+    request_interval_s: 1.0
+    retries: 3
+    timeout_s: 60
+  ecmwf:
+    base_url: https://data.ecmwf.int/forecasts
+    # 按顺序尝试；0.1° 比 0.25° 晚约 2 小时发布
+    resolutions: [0p1, 0p25]
+    lookback_cycles: 6
+    parallel: 4
+    retries: 3
+    timeout_s: 120
+  # 主数据源失败时的回退
+  openmeteo:
+    forecast_url: https://api.open-meteo.com/v1/forecast
+    meta_url: https://api.open-meteo.com/data
+    # 区域的计算域较大，0.25° 的点数容易超出每日 1 万次的免费限额，回退时用更粗的网格
+    resolution: 0.5
+    points_per_request: 100
+    # 每分钟限额约 600 个点：100 点一批，间隔 10 秒
+    request_interval_s: 10.0
+    retries: 3
+    timeout_s: 60
+
+# 运行时数据都放在 data/ 下，本地运行和 Docker 共用同一份。
+# output 由网页服务器以 /data/ 提供；archive 必须位于 output 之内，网页才能读取。
+paths:
+  cache: data/cache
+  output: data/output
+  archive: data/output/archive
+  regions: data/regions.json
+  # 网页上收藏的机位
+  spots: data/spots.json
+
+terrain:
+  # Copernicus GLO-90 瓦片（AWS 公开数据），{n} 是瓦片名
+  tile_url: https://copernicus-dem-90m.s3.amazonaws.com/{n}/{n}.tif
+  # Copernicus GLO-90 瓦片内置的降采样层级：2 表示约 180 m，下载量约为原始的 1/4。
+  # 1 为原始 90 m（下载最多），4 约 370 m（山峰会被削低约 80 m）。
+  overview_factor: 2
+
+server:
+  host: 127.0.0.1
+  port: 8765
+  # 允许修改数据的 Host 名（防 DNS 重绑定）。通过局域网 IP 或其他域名访问时，把它加进来
+  allowed_hosts: [127.0.0.1, localhost, "::1"]
+
+map:
+  # MapLibre 样式地址。换底图时需遵守对应服务的使用条款，并保留其署名
+  style_url: https://tiles.openfreemap.org/styles/dark
+  # 还没有选中区域时的初始视野：[经度, 纬度] 和缩放级别
+  start_center: [137.5, 37.0]
+  start_zoom: 4.3
+
+scoring:
+  # 霞光最浓的时刻：日落后 / 日出前若干分钟
+  event_offset_min: {sunset: 10, sunrise: -10}
+  ray:
+    max_km: 500
+    step_km: 10
+    # 考虑大气折射的等效地球半径
+    r_eff_km: 8000
+  # 太阳高度角（度，负值在地平线下）及权重；朝霞用同一组值
+  alphas_deg: [0.5, 0.0, -0.5, -1.0, -1.5, -2.0, -2.5, -3.0]
+  alpha_weights: [0.4, 0.7, 1.0, 1.0, 1.0, 0.9, 0.7, 0.5]
+  layers:
+    low_top_km: 2.5
+    mid_top_km: 6.5
+  # 光线每穿过 1 km 满云层的衰减系数：T *= exp(-k * cover * ds)
+  attenuation_per_km: {low: 0.035, mid: 0.025, high: 0.007}
+  # 观测点附近这段距离内，幕布所在层的云就是被照亮的幕布本身，不计衰减
+  self_clearance_km: 20
+  # 光路透光率低于该值时，记为在此处被该层云挡住
+  block_threshold: 0.3
+  canopy:
+    mid_height_km: 4.5
+    high_height_km: 9.0
+    rise: 0.3
+    fall: 0.75
+    full_sky_factor: 0.6
+    weight_mid: 0.95
+    weight_high: 0.8
+  observation:
+    k_low: 0.85
+    # 观测点海拔达到该值时，低云视为在脚下，不再遮挡
+    sea_of_clouds_elev_m: 1500
+    sea_bonus: 0.1
+  gamma: 0.8

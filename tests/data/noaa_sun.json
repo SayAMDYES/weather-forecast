@@ -1,0 +1,293 @@
+{
+ "source": "NOAA GML Solar Calculator (gml.noaa.gov/grad/solcalc/main.js, calcSunriseSet), timezone UTC+9",
+ "cases": [
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-06-21",
+   "event": "sunrise",
+   "jst_min": 265.337,
+   "azimuth": 59.99
+  },
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-06-21",
+   "event": "sunset",
+   "jst_min": 1140.01,
+   "azimuth": 300.012
+  },
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-12-22",
+   "event": "sunrise",
+   "jst_min": 407.072,
+   "azimuth": 118.639
+  },
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-12-22",
+   "event": "sunset",
+   "jst_min": 991.554,
+   "azimuth": 241.362
+  },
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-03-20",
+   "event": "sunrise",
+   "jst_min": 345.296,
+   "azimuth": 89.764
+  },
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-03-20",
+   "event": "sunset",
+   "jst_min": 1072.233,
+   "azimuth": 270.481
+  },
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-11-03",
+   "event": "sunrise",
+   "jst_min": 364.361,
+   "azimuth": 107.899
+  },
+  {
+   "name": "tokyo",
+   "lat": 35.681,
+   "lon": 139.767,
+   "date": "2026-11-03",
+   "event": "sunset",
+   "jst_min": 1004.088,
+   "azimuth": 251.927
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-06-21",
+   "event": "sunrise",
+   "jst_min": 270.404,
+   "azimuth": 60.127
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-06-21",
+   "event": "sunset",
+   "jst_min": 1143.265,
+   "azimuth": 299.875
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-12-22",
+   "event": "sunrise",
+   "jst_min": 410.377,
+   "azimuth": 118.52
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-12-22",
+   "event": "sunset",
+   "jst_min": 996.572,
+   "azimuth": 241.481
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-03-20",
+   "event": "sunrise",
+   "jst_min": 349.459,
+   "azimuth": 89.769
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-03-20",
+   "event": "sunset",
+   "jst_min": 1076.382,
+   "azimuth": 270.476
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-11-03",
+   "event": "sunrise",
+   "jst_min": 368.017,
+   "azimuth": 107.831
+  },
+  {
+   "name": "fuji",
+   "lat": 35.361,
+   "lon": 138.727,
+   "date": "2026-11-03",
+   "event": "sunset",
+   "jst_min": 1008.757,
+   "azimuth": 251.996
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-06-21",
+   "event": "sunrise",
+   "jst_min": 337.524,
+   "azimuth": 63.222
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-06-21",
+   "event": "sunset",
+   "jst_min": 1164.541,
+   "azimuth": 296.779
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-12-22",
+   "event": "sunrise",
+   "jst_min": 432.731,
+   "azimuth": 115.864
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-12-22",
+   "event": "sunset",
+   "jst_min": 1062.632,
+   "azimuth": 244.137
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-03-20",
+   "event": "sunrise",
+   "jst_min": 393.734,
+   "azimuth": 89.903
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-03-20",
+   "event": "sunset",
+   "jst_min": 1120.299,
+   "azimuth": 270.319
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-11-03",
+   "event": "sunrise",
+   "jst_min": 399.166,
+   "azimuth": 106.302
+  },
+  {
+   "name": "naha",
+   "lat": 26.212,
+   "lon": 127.679,
+   "date": "2026-11-03",
+   "event": "sunset",
+   "jst_min": 1066.114,
+   "azimuth": 253.536
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-06-21",
+   "event": "sunrise",
+   "jst_min": 260.943,
+   "azimuth": 59.966
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-06-21",
+   "event": "sunset",
+   "jst_min": 1135.923,
+   "azimuth": 300.035
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-12-22",
+   "event": "sunrise",
+   "jst_min": 402.976,
+   "azimuth": 118.659
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-12-22",
+   "event": "sunset",
+   "jst_min": 987.167,
+   "azimuth": 241.342
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-03-20",
+   "event": "sunrise",
+   "jst_min": 341.06,
+   "azimuth": 89.765
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-03-20",
+   "event": "sunset",
+   "jst_min": 1067.993,
+   "azimuth": 270.481
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-11-03",
+   "event": "sunrise",
+   "jst_min": 360.204,
+   "azimuth": 107.909
+  },
+  {
+   "name": "choshi",
+   "lat": 35.735,
+   "lon": 140.827,
+   "date": "2026-11-03",
+   "event": "sunset",
+   "jst_min": 999.764,
+   "azimuth": 251.917
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+# 本地 Python 环境和缓存
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Docker 和运行时数据
+cache/
+data/cache/
+data/output/
+site/data/
+*.log
+
+# 本地环境文件
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# 个人数据：网页上框选的区域和收藏的机位（文件不存在时从空列表开始）
+data/regions.json
+data/regions.tmp
+data/spots.json
+data/spots.tmp
+
+# 只留在本地的早期需求和演示页
+/plan.md
+/reference/
+
+# 设计过程文件只留在本地
+/.design/
+/docs/implementation-plan.md
+
+# 个人覆盖配置（示例见 config/local.example.yaml）
+/config/local.yaml

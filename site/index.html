@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b10">
+<title>火烧云预报</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" integrity="sha384-uTttxo/aOKbdE5RlD/SPzSDoDmNvGlUYPjONi2MN/b7c9HPSvW07OIuyP7uL6jxK" crossorigin="anonymous">
+<link rel="stylesheet" href="https://unpkg.com/flatpickr@4.6.13/dist/themes/dark.css" integrity="sha384-heUUtXw0Djj2DElfLOVPlASSWFKNL3JDY6s3FEqQD03GYyWOeophY5DsfEG40sYX" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="appbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-opacity=".24"/>
+        <path d="M8.5 25h23" stroke="currentColor" stroke-linecap="round"/>
+        <path d="M12.5 25a7.5 7.5 0 0 1 15 0" fill="url(#brand-sun)" stroke="#ffc58f"/>
+        <path d="M20 8.5v3M8.5 20h3M28.5 20h3M12 12l2.1 2.1M28 12l-2.1 2.1" stroke="currentColor" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="brand-sun" x1="20" y1="17.5" x2="20" y2="25" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#ffd8aa"/>
+            <stop offset="1" stop-color="#ff8d57"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </span>
+    <div class="brand-copy">
+      <h1>火烧云预报</h1>
+      <p>朝霞 · 晚霞光路分析</p>
+    </div>
+  </div>
+  <div class="appbar-tools">
+    <span class="status" id="status" aria-live="polite"></span>
+    <button type="button" class="btn" id="archiveBtn">历史存档</button>
+  </div>
+</header>
+<div class="banner" id="banner" hidden></div>
+<div class="archivebar" id="archiveBar" hidden>
+  <span class="archivebar-dot" aria-hidden="true"></span>
+  <div class="archivebar-copy">
+    <strong>历史存档</strong>
+    <span id="archiveBarMeta"></span>
+  </div>
+  <button type="button" class="btn ghost" id="archiveExit">返回当前预报</button>
+</div>
+
+<main class="workspace">
+  <aside class="control-panel">
+    <header class="rail-header">
+      <p class="rail-kicker">观测设置</p>
+      <h2>选择天空</h2>
+      <p class="rail-note">围绕区域中心，沿太阳方向追踪 500 km 光路。</p>
+    </header>
+
+    <section class="control-block">
+      <div class="block-head"><span class="glabel">区域</span><span class="block-note">固定画幅</span></div>
+      <div class="seg region-seg" id="segRegion"></div>
+      <div class="rail-actions">
+        <button type="button" class="btn" id="drawBtn">＋ 放置新区域</button>
+        <button type="button" class="btn ghost" id="deleteBtn" hidden>删除当前区域</button>
+      </div>
+    </section>
+
+    <section class="forecast-controls" id="forecastControls" hidden>
+      <div class="control-block">
+        <div class="block-head"><span class="glabel">日期</span><span class="block-note">当地时间</span></div>
+        <div class="date-control">
+          <label class="date-field" for="dayPicker">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <rect x="2.75" y="3.75" width="14.5" height="13.5" rx="2" stroke="currentColor"/>
+              <path d="M6.25 2.5v2.75M13.75 2.5v2.75M3 8h14" stroke="currentColor" stroke-linecap="round"/>
+              <circle cx="7" cy="11.75" r=".8" fill="currentColor"/>
+              <circle cx="10" cy="11.75" r=".8" fill="currentColor"/>
+              <circle cx="13" cy="11.75" r=".8" fill="currentColor"/>
+            </svg>
+            <input type="text" id="dayPicker" readonly inputmode="none" aria-label="选择预报日期">
+            <span class="date-caret" aria-hidden="true"></span>
+          </label>
+          <button type="button" class="date-refresh" id="dayRefreshBtn" title="刷新当天">
+            <span aria-hidden="true">↻</span>
+          </button>
+        </div>
+        <p class="date-detail" id="dayDetail"></p>
+      </div>
+      <div class="control-pair">
+        <div class="control-block">
+          <div class="block-head"><span class="glabel">事件</span></div>
+          <div class="seg equal-seg" id="segEvent"></div>
+        </div>
+        <div class="control-block">
+          <div class="block-head"><span class="glabel">模式</span></div>
+          <div class="seg equal-seg" id="segModel"></div>
+        </div>
+      </div>
+      <div class="control-block">
+        <div class="block-head"><span class="glabel">图层</span></div>
+        <div class="seg layer-seg" id="segLayer"></div>
+      </div>
+    </section>
+
+    <div class="rail-fill"></div>
+    <footer class="source-footer">
+      <details class="meta-drawer">
+        <summary>数据与底图</summary>
+        <div class="meta-body">
+          <p>数据：NOAA GFS（NOMADS）、ECMWF 开放数据（CC BY 4.0），主源不可用时用 Open-Meteo（CC BY 4.0）。</p>
+          <p>地形：Copernicus DEM GLO-90 © DLR e.V. 2010–2014、© Airbus Defence and Space GmbH 2014–2018，由欧盟和 ESA 在 Copernicus 计划下提供。</p>
+          <p>底图 © <a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者。仅供个人非商业使用，算法参数尚未用实拍校准。</p>
+        </div>
+      </details>
+    </footer>
+  </aside>
+
+  <section class="map-stage" aria-label="火烧云空间分布地图">
+    <div id="map"></div>
+    <div class="map-caption" id="mapCaption" hidden>
+      <span class="map-caption-kicker" id="mapCaptionKicker">当前解算</span>
+      <div class="map-caption-row">
+        <strong id="mapCaptionTitle">—</strong>
+        <span id="mapCaptionMeta">—</span>
+      </div>
+      <div class="map-caption-runs" id="mapCaptionRuns"></div>
+    </div>
+    <div class="map-hud" id="legendHud" hidden>
+      <div class="legend">
+        <span class="legname" id="legname"></span>
+        <div class="legbody"><canvas id="legbar"></canvas><div class="legticks" id="legticks"></div></div>
+        <span class="legwarn" id="legwarn" hidden></span>
+      </div>
+      <div class="readout" id="readout">把鼠标移到地图上查看数值，点击选点</div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <header class="side-head">
+      <div>
+        <p class="rail-kicker">点位分析</p>
+        <h2>光路解算</h2>
+      </div>
+      <span class="side-note">点击地图取点</span>
+    </header>
+    <section class="source-strip" id="sourceCard" hidden>
+      <div class="source-head">
+        <div>
+          <p class="rail-kicker">数据版本</p>
+          <p class="source-context" id="sourceContext"></p>
+        </div>
+        <span class="source-calc" id="sourceCalc"></span>
+      </div>
+      <div class="source-run-list" id="sourceRuns"></div>
+    </section>
+    <div class="side-flow">
+      <div class="card draft-card" id="draftCard" hidden>
+        <p class="ptname">新区域</p>
+        <div class="ptsub" id="draftInfo"></div>
+        <label class="field">名称 <input type="text" id="draftName" maxlength="20" placeholder="例如：仙台"></label>
+        <div class="formerr" id="draftErr"></div>
+        <div class="formrow">
+          <button type="button" class="btn primary" id="draftOk">开始计算</button>
+          <button type="button" class="btn ghost" id="draftCancel">取消</button>
+        </div>
+      </div>
+      <div class="card" id="infoCard">
+        <p class="ptname" id="infoTitle">选择一个区域</p>
+        <div class="infotext" id="infoText"></div>
+      </div>
+      <div class="card overview" id="overviewCard" hidden>
+        <div class="ptitlerow">
+          <p class="ctitle">收藏机位总览 · <span id="ovModel"></span></p>
+        </div>
+        <span class="ovhint">点格子跳到对应机位和时间；带 ? 的格子两模式相差 25 分以上</span>
+        <div class="overview-scroll"><table id="ovt"></table></div>
+      </div>
+      <div class="card" id="detailCard" hidden>
+        <div class="ptitlerow">
+          <p class="ptname" id="ptname">—</p>
+          <button type="button" class="btn ghost spot-btn" id="spotBtn" hidden>☆ 收藏</button>
+        </div>
+        <div class="ptsub" id="ptsub"></div>
+        <div class="scores" id="scores"></div>
+        <div class="verdict" id="verdict"></div>
+        <table>
+          <thead id="thead"></thead>
+          <tbody id="tbl"></tbody>
+        </table>
+      </div>
+      <div class="card" id="profCard" hidden>
+        <div class="ptitlerow">
+          <p class="ctitle" id="proftitle">光路剖面</p>
+          <div class="seg small" id="segProf"></div>
+        </div>
+        <canvas id="prof"></canvas>
+        <div class="profnote" id="profnote"></div>
+      </div>
+      <div class="help-block">
+        <details class="help-drawer">
+          <summary>怎么读这些数值</summary>
+          <ul>
+            <li>霞光指数 60 以上值得出门，80 以上可能是浓烈的大烧。</li>
+            <li>指数综合了头顶中高云的“幕布”、太阳方向 500 km 光路是否通畅，以及本地低云是否挡住视线。</li>
+            <li>两模式分歧大的地方预报不确定，临近再看。橙色虚线是事件时刻的太阳方位。</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<dialog class="archive-dialog" id="archiveDialog" aria-labelledby="archiveTitle">
+  <header class="archive-dialog-head">
+    <div>
+      <p class="rail-kicker">永久存档</p>
+      <h2 id="archiveTitle">历史存档</h2>
+      <p class="archive-intro">每次成功计算都会保留一份完整快照，直到你手动删除。</p>
+    </div>
+    <button type="button" class="btn ghost" id="archiveClose">关闭</button>
+  </header>
+  <div class="archive-list" id="archiveList"></div>
+  <footer class="archive-dialog-foot">存档包含地图、太阳轨迹、云场和地形，可离线重算点位详情。</footer>
+</dialog>
+
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js" integrity="sha384-5+cfbwT0iiub6VsQAdn6yz16nr6sDiQoHx6tm4O8OVYXHYOxcffFmCJBL0dgdvGp" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/flatpickr@4.6.13/dist/flatpickr.min.js" integrity="sha384-5JqMv4L/Xa0hfvtF06qboNdhvuYXUku9ZrhZh3bSk8VXF0A/RuSLHpLsSV9Zqhl6" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/flatpickr@4.6.13/dist/l10n/zh.js" integrity="sha384-VkrKIP0k00t+nCV0whCXV73obyqU1SxOHVMBi51kYfdGdJcg2UPxHUugSnmGCoid" crossorigin="anonymous"></script>
+<script src="app.js"></script>
+</body>
+</html>

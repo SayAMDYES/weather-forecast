@@ -1,0 +1,9 @@
+astral==3.2
+eccodes==2.50.0
+eccodeslib==2.50.0.33
+numpy==2.5.4
+pillow==13.0.0
+PyYAML==6.0.3
+rasterio==1.5.2
+requests==2.34.2
+timezonefinder==9.2.0
